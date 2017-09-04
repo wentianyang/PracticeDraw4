@@ -12,10 +12,10 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-
 import com.hencoder.hencoderpracticedraw4.R;
 
 public class Practice14FlipboardView extends View {
+
     Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     Bitmap bitmap;
     Camera camera = new Camera();
@@ -30,7 +30,8 @@ public class Practice14FlipboardView extends View {
         super(context, attrs);
     }
 
-    public Practice14FlipboardView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public Practice14FlipboardView(Context context, @Nullable AttributeSet attrs,
+        int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -72,7 +73,20 @@ public class Practice14FlipboardView extends View {
         int x = centerX - bitmapWidth / 2;
         int y = centerY - bitmapHeight / 2;
 
+        // 第一遍绘制：上半部分
         canvas.save();
+        canvas.clipRect(0, 0, getWidth(), centerY);
+        canvas.drawBitmap(bitmap, x, y, paint);
+        canvas.restore();
+
+        // 第二遍绘制：下半部分
+        canvas.save();
+
+        if (degree < 90) {
+            canvas.clipRect(0, centerY, getWidth(), getHeight());   //当翻过的角度小于90°时，裁切上半部分
+        } else {
+            canvas.clipRect(0, 0, getWidth(), centerY);     //当翻过的角度大于90°时,裁切下半部分
+        }
 
         camera.save();
         camera.rotateX(degree);

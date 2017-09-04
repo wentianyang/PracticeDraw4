@@ -12,12 +12,13 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-
 import com.hencoder.hencoderpracticedraw4.R;
 
 public class Practice13CameraRotateHittingFaceView extends View {
+
     Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     Bitmap bitmap;
     Point point = new Point(200, 50);
@@ -34,19 +35,25 @@ public class Practice13CameraRotateHittingFaceView extends View {
         super(context, attrs);
     }
 
-    public Practice13CameraRotateHittingFaceView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public Practice13CameraRotateHittingFaceView(Context context, @Nullable AttributeSet attrs,
+        int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     {
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.maps);
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * 2, bitmap.getHeight() * 2, true);
+        Bitmap scaledBitmap = Bitmap
+            .createScaledBitmap(bitmap, bitmap.getWidth() * 2, bitmap.getHeight() * 2, true);
         bitmap.recycle();
         bitmap = scaledBitmap;
 
         animator.setDuration(5000);
         animator.setInterpolator(new LinearInterpolator());
         animator.setRepeatCount(ValueAnimator.INFINITE);
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float newZ = displayMetrics.density * 10;
+        camera.setLocation(0, 0, newZ);
     }
 
     @Override
@@ -70,15 +77,12 @@ public class Practice13CameraRotateHittingFaceView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        int bitmapWidth = bitmap.getWidth();
-        int bitmapHeight = bitmap.getHeight();
-        int centerX = point.x + bitmapWidth / 2;
-        int centerY = point.y + bitmapHeight / 2;
+        int centerX = point.x + bitmap.getWidth() / 2;
+        int centerY = point.y + bitmap.getHeight() / 2;
 
         camera.save();
         matrix.reset();
-        camera.rotateX(degree);
+        camera.rotateX(-degree);
         camera.getMatrix(matrix);
         camera.restore();
         matrix.preTranslate(-centerX, -centerY);
@@ -87,5 +91,6 @@ public class Practice13CameraRotateHittingFaceView extends View {
         canvas.concat(matrix);
         canvas.drawBitmap(bitmap, point.x, point.y, paint);
         canvas.restore();
+
     }
 }
